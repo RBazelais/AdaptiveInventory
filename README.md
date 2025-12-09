@@ -1,21 +1,57 @@
 # Adaptive Inventory System
 
-A performance-optimized inventory system built in Unreal Engine 5 with clean C++/Blueprint architecture.
+A learning project exploring performance-optimized UI systems in Unreal Engine 5, built with C++ and Blueprints.
 
 ![Unreal Engine](https://img.shields.io/badge/Unreal%20Engine-5.7-blue?logo=unrealengine)
 ![C++](https://img.shields.io/badge/C++-17-00599C?logo=cplusplus)
 ![License](https://img.shields.io/badge/License-MIT-green)
+![Status](https://img.shields.io/badge/Status-In%20Development-yellow)
 
 ---
 
 ## Overview
 
-A production-ready inventory system following Epic's recommended patterns for UMG development. The project emphasizes:
+This project is my hands-on exploration of Epic's recommended patterns for UMG development. I'm learning how to build game UI systems by implementing a fully functional inventory system. The focus is on:
 
-- **Clean Architecture** — MVVM pattern with strict data/logic/UI separation
-- **Performance** — Event-driven updates, zero tick overhead
-- **Scalability** — Subsystem pattern persists across levels
-- **Blueprint Integration** — Full designer workflow support
+- **Clean Architecture** — Understanding MVVM pattern and data/logic/UI separation
+- **Performance** — Exploring event-driven updates instead of tick-based polling
+- **Scalability** — Learning the subsystem pattern for persistent game systems
+- **Blueprint Integration** — Making systems designer-friendly
+
+**Why inventory?** Inventory systems are in almost every game, and optimizing them well is surprisingly challenging. It's a perfect way to learn UMG performance, profiling tools, and clean architecture.
+
+---
+
+## What I'm Learning
+
+### Technical Skills
+- ✅ C++ subsystem architecture in UE5
+- ✅ Data-driven design patterns
+- ✅ Event-driven UI updates (avoiding Tick)
+- 🚧 Widget base classes and Blueprint integration
+- 📋 Drag-and-drop interactions
+- 📋 Performance profiling and optimization
+- 📋 Cross-platform UI considerations
+
+### Current Progress
+**Week 1 - Foundation** ✅
+- [x] Core data structures (UInventoryItemData)
+- [x] Inventory subsystem with CRUD operations
+- [x] Auto-stacking logic with overflow handling
+- [x] Event system for UI binding
+- [x] Blueprint function library
+
+**Week 2 - UI Implementation** 🚧
+- [ ] Widget base classes (C++)
+- [ ] Inventory grid widget
+- [ ] Item slot widget with rarity colors
+- [ ] Detail panel
+- [ ] Drag and drop
+
+**Week 3 - Polish & Optimization** 📋
+- [ ] Performance profiling
+- [ ] Widget pooling
+- [ ] Platform-adaptive layouts
 
 ---
 
@@ -24,9 +60,9 @@ A production-ready inventory system following Epic's recommended patterns for UM
 ### Core Systems
 
 - **Item Management** — Add, remove, stack, and query items
-- **Auto-Stacking** — Intelligent overflow distribution across multiple stacks
-- **Filtering** — By category, rarity, or partial name search
-- **Event Broadcasting** — UI updates only when inventory changes
+- **Auto-Stacking** — Intelligent distribution across multiple stacks when one fills up
+- **Filtering** — Search by category, rarity, or partial name match
+- **Event Broadcasting** — Widgets update only when inventory actually changes (no per-frame checks)
 
 ### Item Properties
 
@@ -43,6 +79,8 @@ A production-ready inventory system following Epic's recommended patterns for UM
 
 ## Architecture
 
+I'm following Epic's UMG best practices with a three-layer architecture:
+
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                        PRESENTATION                         │
@@ -52,7 +90,7 @@ A production-ready inventory system following Epic's recommended patterns for UM
                               │ Binds to Events
                               ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                      SUBSYSTEM LOGIC                        │
+│                      BUSINESS LOGIC                         │
 │               UInventoryManagerSubsystem                    │
 │                                                             │
 │  • AddItem()           • GetItemsByCategory()               │
@@ -81,43 +119,44 @@ A production-ready inventory system following Epic's recommended patterns for UM
 ### 1. Access the Inventory Manager
 
 ```cpp
-// C++
-UInventoryManagerSubsystem* Inventory = GetGameInstance()->GetSubsystem<UInventoryManagerSubsystem>();
+// C++ - Get the subsystem
+UInventoryManagerSubsystem* Inventory = 
+    GetGameInstance()->GetSubsystem<UInventoryManagerSubsystem>();
 ```
 
 ```
-// Blueprint
-Get Inventory Manager → returns subsystem reference
+// Blueprint - Right-click in Event Graph
+Search: "Get Inventory Manager Subsystem"
 ```
 
 ### 2. Create and Add Items
 
 ```cpp
-// C++
+// C++ Example
 UInventoryItemData* Sword = NewObject<UInventoryItemData>(GetGameInstance());
 Sword->ItemName = FText::FromString("Iron Sword");
 Sword->ItemCategory = EItemCategory::Weapon;
 Sword->ItemRarity = EItemRarity::Uncommon;
-Inventory->AddItem(Sword);
-```
+Sword->MinDamage = 10.0f;
+Sword->MaxDamage = 20.0f;
 
-```
-// Blueprint
-Create Weapon Item ("Iron Sword", MinDmg: 10, MaxDmg: 20)
-    → Add Item (to Inventory Manager)
+if (Inventory->AddItem(Sword))
+{
+    UE_LOG(LogTemp, Log, TEXT("Added sword to inventory"));
+}
 ```
 
 ### 3. Listen for Changes
 
 ```cpp
-// C++
+// C++ - Bind to events (no Tick needed!)
 Inventory->OnItemAdded.AddDynamic(this, &UMyWidget::HandleItemAdded);
 Inventory->OnInventoryChanged.AddDynamic(this, &UMyWidget::RefreshDisplay);
 ```
 
 ```
 // Blueprint
-Bind Event to OnInventoryChanged → Refresh Inventory UI
+Bind Event to OnInventoryChanged → Refresh UI function
 ```
 
 ---
@@ -126,68 +165,59 @@ Bind Event to OnInventoryChanged → Refresh Inventory UI
 
 ```
 Source/AdaptiveInventory/
-├── Core/
-│   ├── InventoryItemData.h/.cpp         # Item data class
-│   ├── InventoryManagerSubsystem.h/.cpp # Inventory logic
-│   └── InventoryBlueprintLibrary.h/.cpp # Blueprint helpers
+├── Public/Core/
+│   ├── InventoryItemData.h              # Item data class
+│   └── InventoryManagerSubsystem.h      # Inventory business logic
+├── Private/Core/
+│   ├── InventoryItemData.cpp
+│   └── InventoryManagerSubsystem.cpp
 
 Content/AdaptiveInventory/
-├── UI/Widgets/        # UMG widgets (WIP)
-├── Items/Icons/       # Item icons (WIP)
-└── Testing/           # Test blueprints
+├── Core/
+│   ├── Data/                            # Test item blueprints
+│   └── Blueprints/                      # Test actors
+├── UI/Widgets/                          # UMG widgets (coming soon)
+├── Items/Icons/                         # Item textures (coming soon)
+└── Testing/                             # Debug/test blueprints
 ```
 
 ---
 
-## Blueprint Library Functions
-
-### Item Creation
-
-| Function | Description |
-|----------|-------------|
-| `CreateInventoryItem` | Full control over all properties |
-| `CreateStackableMaterial` | Quick material (stack 99) |
-| `CreateWeaponItem` | Weapon with damage stats |
-| `CreateConsumableItem` | Stackable consumable (stack 20) |
-
-### Utilities
-
-| Function | Description |
-|----------|-------------|
-| `GetInventoryManager` | Get subsystem reference |
-| `DebugPrintInventory` | Log all items to Output Log |
-| `AddTestItemsToInventory` | Populate with random test data |
-
----
-
-## Technical Decisions
+## Technical Decisions & Learning
 
 ### Why GameInstanceSubsystem?
 
-- Persists across level loads without manual management
-- Globally accessible without singleton boilerplate
+I chose this pattern because:
+- Persists across level loads automatically
+- No singleton boilerplate needed
 - Built-in Blueprint exposure via `UFUNCTION`
-- Automatic lifecycle (Initialize/Deinitialize)
+- Epic recommends it for game-wide systems
 
-### Why Event-Driven?
+**What I learned:** Subsystems handle their own lifecycle, which eliminates a lot of manual setup code.
 
-- Zero CPU cost when inventory is unchanged
-- UI updates only on actual changes
-- Scales to hundreds of items
-- No per-frame polling or Tick overhead
+### Why Event-Driven Architecture?
+
+Instead of checking every frame if inventory changed (Tick):
+- UI binds to events (OnInventoryChanged, OnItemAdded, etc.)
+- Updates only fire when something actually changes
+- Zero CPU cost when inventory is idle
+
+**What I learned:** This is how Fortnite's UI works - it scales to complex UIs without performance hits.
 
 ### Why Separate Data Classes?
 
-- Data lifetime independent of UI widgets
-- Multiple widgets can display the same item
-- Clean testability (logic without UI)
-- Attempts to Follow Epic's UMG Best Practices
+Following Epic's UMG best practices:
+- Data (UInventoryItemData) lives independently of UI
+- Multiple widgets can show the same data
+- Can test business logic without any UI
+
+**What I learned:** This is the "MVVM" pattern - keeps code clean and testable.
 
 ---
 
 ## Stacking System
 
-The inventory supports intelligent auto-stacking with overflow handling:
+One of the trickier parts was implementing smart auto-stacking:
 
 ```
 Adding 80 Iron Ore (max stack: 99)
@@ -198,65 +228,115 @@ Adding 80 Iron Ore (max stack: 99)
 Result: Two stacks totaling 130 items
 ```
 
-Items match by **Name** + **Category**. The system distributes across all partial stacks before creating new slots.
+Items match by **Name** + **Category**. The system distributes items across all partial stacks before creating new slots.
+
+**Challenge solved:** Handling overflow when a stack is almost full. The system now splits automatically.
 
 ---
 
-## Roadmap
+## Performance Goals
 
-- [x] Core data structures
-- [x] Inventory subsystem with CRUD operations
-- [x] Auto-stacking with overflow
-- [x] Blueprint function library
-- [x] Event system for UI binding
-- [ ] Widget base classes (C++)
-- [ ] Inventory grid widget
-- [ ] Item slot widget with rarity colors
-- [ ] Drag and drop
-- [ ] Detail panel
-- [ ] Performance profiling
-- [ ] Platform-adaptive layouts
+Learning to optimize for these targets:
 
----
-
-## Performance Targets
-
-| Metric | Target |
-|--------|--------|
-| Frame Rate | 60 FPS stable |
-| Active Widgets | < 100 (pooled) |
-| Draw Calls | < 20 per frame |
-| UI Memory | < 180 MB |
-| CPU Time | < 2ms per frame |
+| Metric | Target | Why |
+|--------|--------|-----|
+| Frame Rate | 60 FPS | Console requirement |
+| Active Widgets | < 100 | Widget pooling practice |
+| Draw Calls | < 20/frame | Reduce GPU overhead |
+| UI Memory | < 180 MB | Mobile/Switch consideration |
+| CPU Time | < 2ms/frame | UI budget in AAA games |
 
 ---
 
 ## Built With
 
-- **Unreal Engine 5.7**
-- **C++17**
-- **UMG (Unreal Motion Graphics)**
-- **Blueprint Visual Scripting**
+- **Unreal Engine 5.7** — Game engine
+- **C++17** — Core logic implementation
+- **UMG (Unreal Motion Graphics)** — UI framework
+- **Blueprint Visual Scripting** — Designer workflow
 
 ---
 
-## Author
+## Challenges & Solutions
 
-**Rachel** — UI Engineer & Game Designer
+### Challenge 1: Items Not Stacking
+**Problem:** Created two "Health Potions" but they didn't combine.  
+**Solution:** Item names are case-sensitive! Also need to match category.  
+**Lesson:** String comparison in C++ requires exact matches.
 
-- Practicing UE5 C++ development
-- Background in UI Programming for games and Front End Web Development
+### Challenge 2: Compilation Errors
+**Problem:** "Cannot resolve symbol" errors in Visual Studio.  
+**Solution:** Every function in .cpp needs declaration in .h file.  
+**Lesson:** Header/implementation files must stay in sync.
+
+### Challenge 3: Subsystem Not Showing in Blueprint
+**Problem:** Couldn't find subsystem in Blueprint search.  
+**Solution:** Needed to compile C++ and restart editor.  
+**Lesson:** Blueprint reflection requires editor restart after C++ changes.
+
+---
+
+## What's Next?
+
+**Immediate:**
+- Creating widget base classes in C++
+- Building the grid layout widget
+- Implementing item slot visuals
+
+**Soon:**
+- Drag-and-drop functionality
+- Performance profiling dashboard
+- Widget pooling for optimization
+
+**Eventually:**
+- Touch controls for mobile
+- Controller navigation for console
+- Accessibility features (colorblind modes, text scaling)
+
+---
+
+## Resources I'm Using
+
+- [Epic's Programming Subsystems Docs](https://docs.unrealengine.com/5.0/en-US/programming-subsystems-in-unreal-engine/)
+- [Epic's UMG Best Practices Blog](https://www.unrealengine.com/en-US/blog/umg-best-practices)
+- [Unreal Slackers Discord](https://unrealslackers.org/) — Community help
+- [Ben UI's Unreal Garden](https://unreal-garden.com/) — UMG tutorials
+- Fortnite's inventory as a reference
+
+---
+
+## About Me
+
+**Rachel Bazelais** — UI Designer & Engineer
+
+I'm a UI Engineer with experience in games and web, now deepening my Unreal Engine 5 skills and exploring technical UI design at a systems level. 
+This project is my way of learning UE5's architecture patterns, C++ best practices, and performance optimization techniques used in AAA games.
+
+**Background:**
+- UI implementation for video games and websites
+- Currently expanding: UE5 C++ systems programming and technical UI architecture
+- Interested in: Technical UI Designer roles that bridge design and engineering
+
+**Connect:**
+- GitHub: [Your GitHub](https://github.com/RBazelais)
+- Portfolio: [Your Website](https://rbazelais.itch.io)
+- LinkedIn: [Your LinkedIn](https://wwww.linkedin.com/in/RBazelais)
 
 ---
 
 ## License
 
-TBD
+MIT License - Feel free to use this as a learning resource!
 
 ---
 
 ## Acknowledgments
 
-- Epic Games documentation on [Programming Subsystems](https://docs.unrealengine.com/5.0/en-US/programming-subsystems-in-unreal-engine/)
-- Epic's [UMG Best Practices](https://www.unrealengine.com/en-US/blog/umg-best-practices)
-- Fortnite UI as design reference
+- **Epic Games** for comprehensive UE5 documentation
+- **Unreal Slackers community** for answering my many questions
+- **Fortnite's UI** as design inspiration and reference
+- Everyone who's shared UMG tutorials and best practices
+
+---
+
+**Note:** This is a learning project and work in progress. Code quality improves as I learn more about Unreal Engine development. Feedback and suggestions are always welcome!
