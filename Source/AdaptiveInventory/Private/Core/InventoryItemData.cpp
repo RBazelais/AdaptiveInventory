@@ -36,7 +36,7 @@ void UInventoryItemData::PostInitProperties()
 
 bool UInventoryItemData::AddToStack(int32 Amount)
 {
-    if (!bIsStackable)
+    if (!bIsStackable || Amount <= 0)
     {
         return false;
     }
@@ -45,7 +45,7 @@ bool UInventoryItemData::AddToStack(int32 Amount)
     if (NewStackSize > MaxStackSize)
     {
         CurrentStackSize = MaxStackSize;
-        return false; // Stack is full
+        return false; // Stack is full, only added partial amount
     }
 
     CurrentStackSize = NewStackSize;
@@ -54,9 +54,9 @@ bool UInventoryItemData::AddToStack(int32 Amount)
 
 bool UInventoryItemData::RemoveFromStack(int32 Amount)
 {
-    if (CurrentStackSize < Amount)
+    if (Amount <= 0 || CurrentStackSize < Amount)
     {
-        return false; // Not enough in stack
+        return false; // Invalid amount or not enough in stack
     }
 
     CurrentStackSize -= Amount;
@@ -66,4 +66,10 @@ bool UInventoryItemData::RemoveFromStack(int32 Amount)
 bool UInventoryItemData::IsStackFull() const
 {
     return CurrentStackSize >= MaxStackSize;
+}
+
+void UInventoryItemData::SetStackSize(int32 NewSize)
+{
+    // Clamp to valid range: at least 1, at most MaxStackSize
+    CurrentStackSize = FMath::Clamp(NewSize, 1, MaxStackSize);
 }

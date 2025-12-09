@@ -132,6 +132,13 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Item Data")
     bool IsStackFull() const;
 
+    /**
+     * Set the current stack size directly (clamped to valid range)
+     * @param NewSize - The new stack size
+     */
+    UFUNCTION(BlueprintCallable, Category = "Item Data")
+    void SetStackSize(int32 NewSize);
+
     // Initialization
     virtual void PostInitProperties() override;
 };
