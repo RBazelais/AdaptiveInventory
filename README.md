@@ -11,44 +11,49 @@ A learning project exploring performance-optimized UI systems in Unreal Engine 5
 
 ## Overview
 
-This project is my hands-on exploration of Epic's recommended patterns for UMG development. I'm learning how to build game UI systems by implementing a fully functional inventory system. The focus is on:
+This project explores Epic's recommended patterns for UMG development by building a functional inventory system. Focus areas:
 
-- **Clean Architecture** — Understanding MVVM pattern and data/logic/UI separation
-- **Performance** — Exploring event-driven updates instead of tick-based polling
-- **Scalability** — Learning the subsystem pattern for persistent game systems
-- **Blueprint Integration** — Making systems designer-friendly
+- **Clean Architecture** — MVVM pattern with data/logic/UI separation
+- **Performance** — Event-driven updates instead of tick-based polling
+- **Scalability** — Subsystem pattern for persistent game systems
+- **Blueprint Integration** — Designer-friendly C++ API
 
-**Why inventory?** Inventory systems are in almost every game, and optimizing them well is surprisingly challenging. It's a perfect way to learn UMG performance, profiling tools, and clean architecture.
+**Why inventory?** Common in most games, and optimizing it well involves many UMG performance considerations - good for learning widget lifecycle, memory management, and profiling.
 
 ---
 
 ## What I'm Learning
 
-### Technical Skills
-- ✅ C++ subsystem architecture in UE5
-- ✅ Data-driven design patterns
-- ✅ Event-driven UI updates (avoiding Tick)
-- 🚧 Widget base classes and Blueprint integration
-- 📋 Drag-and-drop interactions
-- 📋 Performance profiling and optimization
-- 📋 Cross-platform UI considerations
+### Skills I'm Bringing From Previous Work
+- [X] **UI Architecture** — Component-based design patterns (React/Svelte → UMG widgets)
+- [X] **Event-Driven Systems** — Data binding and reactive updates (familiar from web frameworks)
+- [X] **Performance Thinking** — Frame budgets, optimization strategies (Coherent Gameface experience)
+- [X] **Game Context** — Understanding player needs, UX in interactive environments
+- [X] **Cross-Platform Constraints** — Building for different screen sizes and inputs
+
+### New Skills I'm Developing
+- [ ] **C++ Memory Management** — Pointers, references, UObject lifecycle (vs. garbage collected JS)
+- [ ] **UMG Widget System** — Native Unreal widgets vs. HTML/DOM
+- [ ] **Blueprint Integration** — Exposing C++ to designers (UFUNCTION, UPROPERTY)
+- [ ] **Slate Architecture** — Understanding the rendering layer beneath UMG
+- [ ] **Profiling Tools** — Unreal Insights, stat commands, memory profilers
 
 ### Current Progress
-**Week 1 - Foundation** ✅
+**Week 1 - Foundation** [X]
 - [x] Core data structures (UInventoryItemData)
 - [x] Inventory subsystem with CRUD operations
 - [x] Auto-stacking logic with overflow handling
 - [x] Event system for UI binding
 - [x] Blueprint function library
 
-**Week 2 - UI Implementation** 🚧
+**Week 2 - UI Implementation** [ ]
 - [ ] Widget base classes (C++)
 - [ ] Inventory grid widget
 - [ ] Item slot widget with rarity colors
 - [ ] Detail panel
 - [ ] Drag and drop
 
-**Week 3 - Polish & Optimization** 📋
+**Week 3 - Polish & Optimization** [ ]
 - [ ] Performance profiling
 - [ ] Widget pooling
 - [ ] Platform-adaptive layouts
@@ -79,7 +84,7 @@ This project is my hands-on exploration of Epic's recommended patterns for UMG d
 
 ## Architecture
 
-I'm following Epic's UMG best practices with a three-layer architecture:
+Following Epic's UMG best practices with a three-layer architecture:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -193,7 +198,7 @@ I chose this pattern because:
 - Built-in Blueprint exposure via `UFUNCTION`
 - Epic recommends it for game-wide systems
 
-**What I learned:** Subsystems handle their own lifecycle, which eliminates a lot of manual setup code.
+**What I learned:** Subsystems handle their own lifecycles, eliminating much of the manual setup code.
 
 ### Why Event-Driven Architecture?
 
@@ -307,20 +312,42 @@ Learning to optimize for these targets:
 
 ## About Me
 
-**Rachel Bazelais** — UI Designer & Engineer
+**Rachel** — UI Engineer
 
-I'm a UI Engineer with experience in games and web, now deepening my Unreal Engine 5 skills and exploring technical UI design at a systems level. 
-This project is my way of learning UE5's architecture patterns, C++ best practices, and performance optimization techniques used in AAA games.
+I build game UIs with Coherent Gameface and web technologies. This project explores native UE5 UMG/C++ to understand how engine-level UI systems work compared to web-based approaches.
 
-**Background:**
-- UI implementation for video games and websites
-- Currently expanding: UE5 C++ systems programming and technical UI architecture
-- Interested in: Technical UI Designer roles that bridge design and engineering
+**Tech Stack:**
+- Languages: C++, JavaScript, TypeScript, Python, HTML/CSS
+- Game UI: Coherent Gameface (Svelte, React), UMG/Slate (learning)
+- Web: React, Svelte, PostgreSQL, MySQL, MongoDB, Blackboard
+- Engine: Unreal Engine 5
 
-**Connect:**
-- GitHub: [Your GitHub](https://github.com/RBazelais)
-- Portfolio: [Your Website](https://rbazelais.itch.io)
-- LinkedIn: [Your LinkedIn](https://wwww.linkedin.com/in/RBazelais)
+**Links:**
+- GitHub: [RBazelais](https://github.com/RBazelais)
+- Portfolio: [rbazelais.itch.io](https://rbazelais.itch.io)
+- LinkedIn: [RBazelais](https://www.linkedin.com/in/RBazelais)
+
+---
+
+## Why Native UMG vs. Coherent?
+
+Since I have Coherent Gameface experience, you might wonder why learn native UMG:
+
+**Coherent (HTML/JS/CSS):**
+- [X] Rapid iteration with familiar web tech
+- [X] Great for complex layouts and text
+- [ ] Performance overhead from browser runtime
+- [ ] Limited access to engine systems
+- [ ] Memory footprint of embedded browser
+
+**Native UMG/Slate:**
+- [X] Direct engine integration, no middleware
+- [X] Lower memory footprint
+- [X] Full access to C++ engine systems
+- [X] Better performance for high-frequency updates
+- [ ] Steeper learning curve (C++ vs. JS)
+
+Both have their place - I want to understand both approaches and know when to use each.
 
 ---
 
@@ -339,4 +366,4 @@ MIT License - Feel free to use this as a learning resource!
 
 ---
 
-**Note:** This is a learning project and work in progress. Code quality improves as I learn more about Unreal Engine development. Feedback and suggestions are always welcome!
+**Note:** Learning project focused on native UE5 UI systems. Coming from web-based game UI (Coherent Gameface), exploring the architectural and performance differences of engine-native approaches. Feedback welcome!
