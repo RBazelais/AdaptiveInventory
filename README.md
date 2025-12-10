@@ -47,9 +47,9 @@ This project explores Epic's recommended patterns for UMG development by buildin
 - [x] Blueprint function library
 
 **Week 2 - UI Implementation** [ ]
-- [ ] Widget base classes (C++)
+- [x] Widget base class (UInventoryWidgetBase)
+- [ ] Item slot widget
 - [ ] Inventory grid widget
-- [ ] Item slot widget with rarity colors
 - [ ] Detail panel
 - [ ] Drag and drop
 
@@ -89,7 +89,12 @@ Following Epic's UMG best practices with a three-layer architecture:
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                        PRESENTATION                         │
-│                   (Blueprint Widgets - WIP)                 │
+│                      (UMG Widgets)                          │
+│                                                             │
+│   UInventoryWidgetBase (abstract base)                      │
+│       ├── UInventorySlotWidget (coming soon)                │
+│       ├── UInventoryGridWidget (coming soon)                │
+│       └── UItemDetailWidget (coming soon)                   │
 └─────────────────────────────────────────────────────────────┘
                               │
                               │ Binds to Events
@@ -170,12 +175,20 @@ Bind Event to OnInventoryChanged → Refresh UI function
 
 ```
 Source/AdaptiveInventory/
-├── Public/Core/
-│   ├── InventoryItemData.h              # Item data class
-│   └── InventoryManagerSubsystem.h      # Inventory business logic
-├── Private/Core/
-│   ├── InventoryItemData.cpp
-│   └── InventoryManagerSubsystem.cpp
+├── Public/
+│   ├── Core/
+│   │   ├── InventoryItemData.h
+│   │   ├── InventoryManagerSubsystem.h
+│   │   └── InventoryBlueprintLibrary.h
+│   └── UI/
+│       └── InventoryWidgetBase.h
+├── Private/
+│   ├── Core/
+│   │   ├── InventoryItemData.cpp
+│   │   ├── InventoryManagerSubsystem.cpp
+│   │   └── InventoryBlueprintLibrary.cpp
+│   └── UI/
+│       └── InventoryWidgetBase.cpp
 
 Content/AdaptiveInventory/
 ├── Core/
@@ -198,7 +211,7 @@ I chose this pattern because:
 - Built-in Blueprint exposure via `UFUNCTION`
 - Epic recommends it for game-wide systems
 
-**What I learned:** Subsystems handle their own lifecycles, eliminating much of the manual setup code.
+**What I learned:** Subsystems handle their own lifecycle, which eliminates a lot of manual setup code.
 
 ### Why Event-Driven Architecture?
 
@@ -217,6 +230,16 @@ Following Epic's UMG best practices:
 - Can test business logic without any UI
 
 **What I learned:** This is the "MVVM" pattern - keeps code clean and testable.
+
+### Why a Widget Base Class?
+
+All inventory widgets inherit from `UInventoryWidgetBase`:
+- Caches subsystem reference (no repeated lookups)
+- Handles event binding/unbinding automatically
+- Provides common `RefreshWidget()` pattern
+- Cleans up on destruction (prevents dangling delegates)
+
+**What I learned:** Base classes eliminate repetitive boilerplate and ensure consistent lifecycle management.
 
 ---
 
@@ -279,14 +302,19 @@ Learning to optimize for these targets:
 **Solution:** Needed to compile C++ and restart editor.  
 **Lesson:** Blueprint reflection requires editor restart after C++ changes.
 
+### Challenge 4: Unused Include Warning
+**Problem:** Compiler warned `InventoryItemData.h` wasn't used in widget base.  
+**Solution:** Removed it - forward declarations are sufficient when only using pointers.  
+**Lesson:** Only include headers when you call methods; forward declare for pointer types.
+
 ---
 
 ## What's Next?
 
 **Immediate:**
-- Creating widget base classes in C++
-- Building the grid layout widget
-- Implementing item slot visuals
+- Item slot widget with rarity colors and hover states
+- Inventory grid widget with slot pooling
+- Detail panel for selected items
 
 **Soon:**
 - Drag-and-drop functionality
@@ -306,7 +334,7 @@ Learning to optimize for these targets:
 - [Epic's UMG Best Practices Blog](https://www.unrealengine.com/en-US/blog/umg-best-practices)
 - [Unreal Slackers Discord](https://unrealslackers.org/) — Community help
 - [Ben UI's Unreal Garden](https://unreal-garden.com/) — UMG tutorials
-- Fortnite's inventory as a reference
+- Fortnite's inventory as reference
 
 ---
 
@@ -318,14 +346,14 @@ I build game UIs with Coherent Gameface and web technologies. This project explo
 
 **Tech Stack:**
 - Languages: C++, JavaScript, TypeScript, Python, HTML/CSS
-- Game UI: Coherent Gameface (Svelte, React), UMG/Slate (learning)
+- Game UI: Coherent Gameface (Svelte), UMG/Slate (learning)
 - Web: React, Svelte, PostgreSQL, MySQL, MongoDB, Blackboard
 - Engine: Unreal Engine 5
 
 **Links:**
 - GitHub: [RBazelais](https://github.com/RBazelais)
 - Portfolio: [rbazelais.itch.io](https://rbazelais.itch.io)
-- LinkedIn: [RBazelais](https://www.linkedin.com/in/RBazelais)
+- LinkedIn: [linkedin.com/in/rbazelais](https://www.linkedin.com/in/rbazelais)
 
 ---
 
