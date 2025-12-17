@@ -48,14 +48,15 @@ This project explores Epic's recommended patterns for UMG development by buildin
 
 **Week 2 - UI Implementation** [ ]
 - [x] Widget base class (UInventoryWidgetBase)
-- [ ] Item slot widget
-- [ ] Inventory grid widget
+- [x] Item slot widget (UInventorySlotWidget)
+- [x] Inventory grid widget (UInventoryGridWidget)
 - [ ] Detail panel
 - [ ] Drag and drop
 
 **Week 3 - Polish & Optimization** [ ]
 - [ ] Performance profiling
 - [ ] Widget pooling
+- [ ] Gamepad/controller support (focus navigation)
 - [ ] Platform-adaptive layouts
 
 ---
@@ -181,20 +182,26 @@ Source/AdaptiveInventory/
 │   │   ├── InventoryManagerSubsystem.h
 │   │   └── InventoryBlueprintLibrary.h
 │   └── UI/
-│       └── InventoryWidgetBase.h
+│       ├── InventoryWidgetBase.h
+│       ├── InventorySlotWidget.h
+│       └── InventoryGridWidget.h
 ├── Private/
 │   ├── Core/
 │   │   ├── InventoryItemData.cpp
 │   │   ├── InventoryManagerSubsystem.cpp
 │   │   └── InventoryBlueprintLibrary.cpp
 │   └── UI/
-│       └── InventoryWidgetBase.cpp
+│       ├── InventoryWidgetBase.cpp
+│       ├── InventorySlotWidget.cpp
+│       └── InventoryGridWidget.cpp
 
 Content/AdaptiveInventory/
 ├── Core/
 │   ├── Data/                            # Test item blueprints
 │   └── Blueprints/                      # Test actors
-├── UI/Widgets/                          # UMG widgets (coming soon)
+├── UI/Widgets/
+│   ├── WBP_InventorySlot                # Slot widget blueprint
+│   └── WBP_InventoryGrid                # Grid widget blueprint
 ├── Items/Icons/                         # Item textures (coming soon)
 └── Testing/                             # Debug/test blueprints
 ```
@@ -240,6 +247,65 @@ All inventory widgets inherit from `UInventoryWidgetBase`:
 - Cleans up on destruction (prevents dangling delegates)
 
 **What I learned:** Base classes eliminate repetitive boilerplate and ensure consistent lifecycle management.
+
+### Why the Display Data Pattern?
+
+Coming from React/TypeScript, I recognized a familiar pattern. In React, you derive display state from props:
+
+```typescript
+// React - state derived from props, component re-renders automatically
+const displayState = {
+  hasItem: item !== null,
+  isStackable: item?.maxStack > 1,
+  stackCount: item?.stackCount ?? 0,
+};
+```
+
+In C++/UMG, the same concept applies but you manage updates manually:
+
+```cpp
+// C++ - gather state once, pass to update functions
+FSlotDisplayData Data = GatherDisplayData();
+UpdateIcon(Data);
+UpdateStackCount(Data);
+```
+
+The key difference:
+
+| Concept | React | UMG |
+|---------|-------|-----|
+| State changes | Auto re-render | Manual `UpdateVisuals()` call |
+| Null handling | Optional chaining `?.` | Early returns + checks |
+| Data flow | Props down, events up | Same pattern, explicit wiring |
+
+**What I learned:** The mental model transfers. React automates the "when to update" part. In UMG, you wire that yourself with events and explicit update calls. Same architecture, different automation level.
+
+### Why Hybrid MVVM + Component Pattern?
+
+The system uses two patterns together:
+
+**MVVM** for data flow:
+- Model (`UInventoryItemData`) knows nothing about UI
+- ViewModel (`UInventoryManagerSubsystem`) handles logic and broadcasts events
+- View (widgets) binds to events and displays data
+
+**Component pattern** for widget composition:
+- Grid creates and manages Slot children
+- Props down (`SetItem()`), events up (`OnSlotClicked`)
+- Self-contained, reusable widgets
+
+```
+Data Layer (MVVM)              Widget Layer (Component)
+─────────────────              ────────────────────────
+Subsystem broadcasts    →      Grid receives event
+                               Grid updates Slots
+                               Slot clicked
+Grid receives click     ←      Slot broadcasts up
+Grid calls SelectItem
+Grid broadcasts         →      Detail panel receives
+```
+
+**What I learned:** These patterns aren't mutually exclusive. MVVM handles data flow, Component pattern handles widget composition. This is common in game UI - Fortnite likely uses similar architecture.
 
 ---
 
@@ -353,7 +419,7 @@ I build game UIs with Coherent Gameface and web technologies. This project explo
 **Links:**
 - GitHub: [RBazelais](https://github.com/RBazelais)
 - Portfolio: [rbazelais.itch.io](https://rbazelais.itch.io)
-- LinkedIn: [linkedin.com/in/rbazelais](https://www.linkedin.com/in/rbazelais)
+- LinkedIn: [RBazelais](https://www.linkedin.com/in/RBazelais)
 
 ---
 
