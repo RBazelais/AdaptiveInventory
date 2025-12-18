@@ -6,6 +6,7 @@
 
 #include "CoreMinimal.h"
 #include "UI/InventoryWidgetBase.h"
+#include "UI/InventoryStyleTypes.h"
 #include "Core/InventoryItemData.h"
 #include "InventorySlotWidget.generated.h"
 
@@ -13,6 +14,7 @@
 class UImage;
 class UTextBlock;
 class UBorder;
+class UInventoryStyleData;
 
 // Delegate for slot interactions
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSlotClicked, UInventorySlotWidget*, Slot);
@@ -117,44 +119,23 @@ public:
 	FOnSlotUnhovered OnSlotUnhovered;
 
 protected:
-	// VISUAL CONFIGURATION
+	// ----------------------------------------
+	// Style Configuration
+	// ----------------------------------------
 
-	/** Size of the slot in pixels */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory Slot|Appearance")
-	FVector2D SlotSize = FVector2D(80.0f, 80.0f);
+	/** Style data asset (optional - use for preset themes) */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory Slot|Style")
+	TObjectPtr<UInventoryStyleData> StyleData;
 
-	/** Color when slot is empty */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory Slot|Appearance")
-	FLinearColor EmptySlotColor = FLinearColor(0.12f, 0.14f, 0.18f, 0.6f);
+	/** Inline style (used if StyleData is null) */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory Slot|Style")
+	FInventorySlotStyle SlotStyle;
 
-	/** Border color when slot is empty */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory Slot|Appearance")
-	FLinearColor EmptyBorderColor = FLinearColor(0.24f, 0.28f, 0.35f, 0.5f);
+	/** Get active style (from StyleData or inline) */
+	const FInventorySlotStyle& GetSlotStyle() const;
 
-	/** Color when slot is selected */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory Slot|Appearance")
-	FLinearColor SelectedColor = FLinearColor(1.0f, 1.0f, 1.0f, 1.0f);
-
-	/** Scale multiplier when hovered */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory Slot|Appearance")
-	float HoverScale = 1.05f;
-
-	// RARITY COLORS
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory Slot|Rarity Colors")
-	FLinearColor CommonColor = FLinearColor(0.55f, 0.55f, 0.55f, 1.0f);
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory Slot|Rarity Colors")
-	FLinearColor UncommonColor = FLinearColor(0.38f, 0.67f, 0.23f, 1.0f);
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory Slot|Rarity Colors")
-	FLinearColor RareColor = FLinearColor(0.29f, 0.67f, 0.95f, 1.0f);
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory Slot|Rarity Colors")
-	FLinearColor EpicColor = FLinearColor(0.73f, 0.27f, 0.86f, 1.0f);
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory Slot|Rarity Colors")
-	FLinearColor LegendaryColor = FLinearColor(0.92f, 0.55f, 0.14f, 1.0f);
+	/** Get rarity colors from active style */
+	FLinearColor GetRarityColor(EItemRarity Rarity) const;
 
 	// WIDGET BINDINGS (set in Blueprint)
 
